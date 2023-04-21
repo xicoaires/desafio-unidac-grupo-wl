@@ -1,0 +1,28 @@
+body {
+    background-color: #FFFFFF!important;
+}
+.main-container{
+    width: 90vw;
+    height: 90vh;
+    position: relative;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+
+}
+
+#navbar{
+    background-color: #1B3B57;
+}
+
+#navbar b{
+    color: #FFFFFF;
+}
+
+#logo-unidac{
+    margin-top: 30px;
+    width: 150px;
+    height: auto;
+}

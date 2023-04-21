@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Francisco Aires">
+    <meta name="created" content="2023-04-21">
+    <title>Unidac</title>
+
+    <!--  CSS, Javascript, Framework Semantic UI, Biblioteca JQuery-->
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.min.js"></script>
+    <!-- Fim CSS, Javascript, Framework Semantic UI, Biblioteca JQuery-->
+
+    <link rel="shortcut icon" type="image/png" href="images/favicon.png">
+</head>
+
+<body>
+    <!-- Container do navbar -->
+    <div class="ui one item menu" id="navbar">
+        <div class="active item"><b>Projeto Café da Manhã - Unidac</b></div>
+    </div>
+    <!-- Fim container do navbar -->
+
+    <!-- Container principal -->
+    <div class="main-container">
+        <img src="https://wlgrupo.com/site-2022/wp-content/uploads/2022/05/empresa-logo.png" id="logo-unidac" alt="logo da Unidac">
+        <h3>Lista do Café da Manhã</h3>
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th>Colaborador</th>
+                    <th>CPF</th>
+                    <th>Item</th>
+                    <th>Data</th>
+                    <th>Trouxe?</th>
+                    <th>Excluir</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <!-- As linhas da tabela serão geradas dinamicamente aqui -->
+            </tbody>
+        </table>
+
+        <!-- Button trigger modal -->
+        <button class="primary ui button" onclick="newItemModal()">Adicionar</button>
+
+    </div>
+    <!-- Fim container principal -->
+
+    <!-- Modal -->
+    <div class="ui special modal">
+        <i class="close icon"></i>
+        <div class="header">
+            Adicionar
+        </div>
+        <div class="content">
+            <form class="ui form">
+                <div class="field" id="input-name">
+                    <label>Colaborador</label>
+                    <input type="text" id="name">
+                </div>
+                <div class="field" id="input-cpf">
+                    <label>CPF (apenas números)</label>
+                    <input type="text" id="cpf" maxlength="11">
+                </div>
+                <div class="field" id="input-foodOption">
+                    <label>Itens (separados por vírgula)</label>
+                    <input type="text" id="foodOption">
+                </div>
+                <div class="field" id="input-date">
+                    <label>Data</label>
+                    <input type="date" id="date">
+                </div>
+            </form>
+        </div>
+        <div class="actions">
+            <div class="ui primary button" id="btn-save-item">Adicionar</div>
+        </div>
+    </div>
+    <!-- Fim modal -->
+</body>
+
+</html>
