@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(origins = "https://desafio-unidac.up.railway.app")
+@CrossOrigin(origins = "https://desafio-unidac-angular.netlify.app/")
 @RequestMapping("/employees")
 public class EmployeeController {
 
