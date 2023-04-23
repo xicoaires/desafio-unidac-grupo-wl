@@ -40,7 +40,7 @@
                     <th>Item</th>
                     <th>Data</th>
                     <th>Trouxe?</th>
-                    <th>Excluir</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="table-body">
@@ -55,7 +55,7 @@
     <!-- Fim container principal -->
 
     <!-- Modal -->
-    <div class="ui special modal">
+    <div class="ui special modal" id="newItemModal">
         <i class="close icon"></i>
         <div class="header">
             Adicionar
@@ -82,9 +82,42 @@
         </div>
         <div class="actions">
             <div class="ui primary button" id="btn-save-item">Adicionar</div>
+            
         </div>
     </div>
     <!-- Fim modal -->
+<!-- Modal de edição -->
+<div class="ui special modal" id="editModal">
+    <i class="close icon"></i>
+    <div class="header">
+      Editar
+    </div>
+    <div class="content">
+      <form class="ui form">
+        <div class="field" id="input-edit-name">
+          <label>Nome</label>
+          <input type="text" id="edit-name">
+        </div>
+        <div class="field" id="input-edit-cpf">
+          <label>CPF (apenas números)</label>
+          <input type="text" id="edit-cpf" maxlength="11">
+        </div>
+        <div class="field" id="input-edit-foodOption">
+          <label>Itens (separados por vírgula)</label>
+          <input type="text" id="edit-foodOption">
+        </div>
+        <div class="field" id="input-edit-date">
+          <label>Data</label>
+          <input type="date" id="edit-date">
+        </div>
+      </form>
+    </div>
+    <div class="actions">
+      <div class="ui red button" id="btn-cancel-edit" onclick="cancel()">Cancelar</div>
+      <div class="ui green button" id="btn-save-edit">Salvar</div>
+    </div>
+  </div>  
+  <!-- Fim modal edit -->
 </body>
 
 </html>

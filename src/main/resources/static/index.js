@@ -37,7 +37,7 @@ async function fetchData() {
             tr.appendChild(tdCafe);
 
             const tdData = document.createElement('td');
-            rowDate = row.date.replace(/T.*/,'').split('-').reverse().join('/');
+            rowDate = row.date.replace(/T.*/, '').split('-').reverse().join('/');
             tdData.textContent = rowDate
             tr.appendChild(tdData);
 
@@ -73,21 +73,35 @@ async function fetchData() {
             tdProduto.appendChild(select);
             tr.appendChild(tdProduto);
 
-            const tdAcoes = document.createElement('td');
-
             const deleteButton = document.createElement('button');
             deleteButton.classList.add('ui', 'icon', 'button');
             const deleteIcon = document.createElement('i');
             deleteIcon.classList.add('trash', 'icon');
             deleteButton.appendChild(deleteIcon);
             deleteButton.addEventListener('click', () => {
-              if (confirm('Tem certeza que deseja excluir essa linha?')) {
-                deleteRow(row.id);
-            }
+                if (confirm('Tem certeza que deseja excluir essa linha?')) {
+                    deleteRow(row.id);
+                }
             });
+
+            const editButton = document.createElement('button');
+            editButton.classList.add('ui', 'icon', 'button');
+            const editIcon = document.createElement('i');
+            editIcon.classList.add('edit', 'icon');
+            editButton.appendChild(editIcon);
+            editButton.addEventListener('click', () => {
+                openEditModal(row.id, row.name, row.cpf, row.foodOption, row.date);
+            });
+
+            const tdAcoes = document.createElement('td');
             tdAcoes.appendChild(deleteButton);
+            tdAcoes.appendChild(editButton);
 
             tr.appendChild(tdAcoes);
+
+            editButton.addEventListener('click', () => {
+                openEditModal(row.id, row.name, row.cpf, row.foodOption, row.date);
+            });
 
             select.addEventListener('change', (event) => {
                 const verification = event.target.value === 'Sim';
@@ -104,12 +118,12 @@ async function fetchData() {
             let today = new Date();
             todayString = today.toISOString().split('T')[0];
             let day = new Date(row.date);
-            dayString  = day.toISOString().split('T')[0];
+            dayString = day.toISOString().split('T')[0];
             if (dayString !== todayString) {
                 tr.classList.add('disable');
                 select.disabled = true;
                 deleteButton.disabled = false;
-              }
+            }
             tableBody.appendChild(tr);
 
         });
@@ -145,50 +159,59 @@ Ela verifica se o nome ou CPF já foram escolhidos por outros colaboradores ou s
 e se tudo estiver correto, adiciona o registro na tabela.
 */
 async function addItem(name, cpf, foodOption, date) {
-        let response = await fetch('/employees');
-        const data = await response.json();
+    let response = await fetch('/employees');
+    const data = await response.json();
 
-        const foundName = data.find((row) => row.name === name);
-        if (foundName) {
-            alert(`O colaborador "${name}" já escolheu os itens.`);
+    const foundName = data.find((row) => row.name === name);
+    if (foundName) {
+        alert(`O colaborador "${name}" já escolheu os itens.`);
+        return;
+    }
+
+    const foundCpf = data.find((row) => row.cpf === cpf);
+    if (foundCpf) {
+        alert(`O colaborador com o CPF nº ${cpf} já escolheu o item.`);
+        return;
+    }
+
+    const foodOptions = foodOption.split(',');
+
+    for (const food of foodOptions) {
+        const foundFoods = data.some((row) => row.foodOption.includes(food));
+        if (foundFoods) {
+            alert(`O item "${food}" já foi escolhido.`);
             return;
         }
+    }
 
-        const foundCpf = data.find((row) => row.cpf === cpf);
-        if (foundCpf) {
-            alert(`O colaborador com o CPF nº ${cpf} já escolheu o item.`);
-            return;
-        }
+    response = await fetch('/employees', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name: name, cpf: cpf, foodOption: foodOption, date: date })
+    });
 
-        const foodOptions2 = foodOption.split(',');
+    await response.json();
 
-        for (const food of foodOptions2) {
-            const foundFoods = data.some((row) => row.foodOption.includes(food));
-            if (foundFoods) {
-              alert(`O item "${food}" já foi escolhido.`);
-              return;
-            }
-        }
-    
-        response = await fetch('/employees', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name: name, cpf: cpf, foodOption: foodOption, date: date })
-        });
+    console.log('Registro adicionado:', data);
 
-        await response.json();
-
-        console.log('Registro adicionado:', data);
-
-        // atualiza a tabela
-        location.reload();
+    // atualiza a tabela
+    location.reload();
 }
 
 // Função para abrir o modal de adicionar novo registro
 function newItemModal() {
-    $('.special.modal')
+    $('#newItemModal')
+        .modal({
+            centered: false
+        })
+        .modal('show')
+};
+
+// Função para abrir o modal de adicionar novo registro
+function updateModal() {
+    $('#editModal')
         .modal({
             centered: false
         })
@@ -230,7 +253,7 @@ function initialize() {
 
             if ($('#date').val() === '') {
                 $('#input-date').addClass('error');
-            } 
+            }
         }
     })
 }
@@ -251,7 +274,7 @@ window.addEventListener('load', function () {
     });
 
     $('#cpf').change(function () {
-        if (($('#cpf').val() === '') || (($('#cpf').val()).length < 11)){
+        if (($('#cpf').val() === '') || (($('#cpf').val()).length < 11)) {
             $('#input-cpf').addClass('error');
         } else {
             $('#input-cpf').removeClass('error');
@@ -288,9 +311,75 @@ Utiliza o método HTTP "DELETE" e aguarda a resposta da requisição com o coman
 Quando a requisição é bem-sucedida, a página é recarregada para atualizar a tabela exibida.
 */
 async function deleteRow(id) {
-      const response = await fetch(`/employees/${id}`, {
+    const response = await fetch(`/employees/${id}`, {
         method: 'DELETE',
-      });
+    });
 
-      location.reload()  }
+    location.reload()
+}
+
+async function updateRow(id, newData) {
+    const response = await fetch(`/employees/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newData)
+    });
+
+    if (response.ok) {
+        location.reload();
+    } else {
+        // tratamento de erro, se necessário
+    }
+}
+
+
+function openEditModal(id, name, cpf, foodOption, date) {
+    // Preencher os campos do formulário no modal
+    $('#edit-name').val(name);
+    $('#edit-cpf').val(cpf);
+    $('#edit-foodOption').val(foodOption);
+    $('#edit-date').val(date);
+
+    // Adicionar um evento de clique no botão "Salvar" do modal
+    $('#btn-save-edit').off('click').on('click', async function () {
+        // Obter os valores dos campos do formulário
+        const newName = $('#edit-name').val();
+        const newCpf = $('#edit-cpf').val();
+        const newFoodOption = $('#edit-foodOption').val();
+        const newDate = $('#edit-date').val();
+
+        // Enviar uma requisição PUT para atualizar os dados no banco
+        const response = await fetch(`/employees/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: newName,
+                cpf: newCpf,
+                foodOption: newFoodOption,
+                date: newDate
+            })
+        });
+
+        // Verificar se a requisição foi bem-sucedida e recarregar a página
+        if (response.ok) {
+            location.reload();
+        } else {
+            console.error('Failed to update item:', response);
+            alert('Failed to update item. Please try again later.');
+        }
+    });
+
+    // Abrir o modal
+    $('#editModal').modal('show');
+}
+
+
+
+function cancel() {
+    $('#editModal').modal('hide');
+}
 
